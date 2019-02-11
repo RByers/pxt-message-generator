@@ -1,30 +1,32 @@
-
-/* function showChar() {
-    if (idx < 0) {
-        basic.showIcon(IconNames.Yes);
-    } else {
-        let ch = chars.charAt(idx);
-        basic.showString(ch, 0);
-    }
-} */
-
 const TILT_X_THRESHOLD = 100; // in micro-gs
 const TILT_X_SPEED = 10;      // chars/second/g
 const TILT_MIN_SPEED = 0.5;     // chars/second
 
 let running = false;
+let idx = 0;
+let message = "";
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .!";
+
+input.onButtonPressed(Button.A, function () {
+    if (running) {
+        message += chars.charAt(idx);
+    }
+});
+
+input.onButtonPressed(Button.AB, function () {
+    if (running) {
+        running = false;
+    }
+});
 
 function getMessage() {
     if (running)
         return "";  // Not re-entrant
     running = true;
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .!";
-    let idx = 0;
-    let message = "";
     let lastChange = 0;
 
-    while (true) {
+    while (running) {
         let now = input.runningTime();
         let accX = input.acceleration(Dimension.X);
         if (Math.abs(accX) >= TILT_X_THRESHOLD) {
@@ -55,8 +57,6 @@ function getMessage() {
         }
         basic.pause(20);
     }
-
-    running = false;
     return message;
 }
 
