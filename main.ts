@@ -1,6 +1,6 @@
-const TILT_X_THRESHOLD = 100; // in micro-gs
+const TILT_X_THRESHOLD = 200; // in micro-gs
 const TILT_X_SPEED = 10;      // chars/second/g
-const TILT_MIN_SPEED = 0.5;     // chars/second
+const TILT_MIN_SPEED = 0.5;   // chars/second
 
 let running = false;
 let idx = 0;
@@ -32,7 +32,7 @@ function getMessage() {
         if (Math.abs(accX) >= TILT_X_THRESHOLD) {
             let delta = 0;
             if (lastChange) {
-                let speed = Math.abs(accX) * TILT_X_SPEED / 1000;
+                let speed = (Math.abs(accX) - TILT_X_THRESHOLD) * TILT_X_SPEED / 1000;
                 if (speed < TILT_MIN_SPEED)
                     speed = TILT_MIN_SPEED;
                 delta = Math.round(speed * (now - lastChange) / 1000);
@@ -50,7 +50,7 @@ function getMessage() {
                 basic.showString(chars.charAt(idx), 0);
                 lastChange = now;
             }
-        } else if (lastChange && now - lastChange > 1 / TILT_MIN_SPEED) {
+        } else if (lastChange && (now - lastChange) > (1000 / TILT_MIN_SPEED)) {
             // If there hasn't been an update sooner than the minimum speed
             // then permit an update as soon as the threshold is exceeded.  
             lastChange = 0;
@@ -61,4 +61,6 @@ function getMessage() {
 }
 
 let msg = getMessage();
-basic.showString(msg);
+
+while (true)
+    basic.showString(msg);
